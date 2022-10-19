@@ -2,12 +2,13 @@ import './css/styles.css';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import { apiPixabay } from "./apiPixabay";
+import { renderMarkUp } from "./render";
 
 const form = document.querySelector(".search-form");
-const loadMore = document.querySelector(".load-more")
+// const loadMore = document.querySelector(".load-more")
 const gallery = document.querySelector(".gallery");
 let findImage = "";
+let render = "";
 let lightbox = new SimpleLightbox('.gallery a', {
       captionSelector: "img",
       captionsData: "alt",
@@ -25,68 +26,72 @@ function onSubmit(e) {
     apiPixabay(findImage).then(data => {
         if (data.total === 0) {
     Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
-}
+        }
       manageRenderMarkup(data)  
     })
     
+    function apiPixabay(data) {
+        //    pixabay.com/api
+        const key = `30662426-21982097d0559eebc608a0eec`;
+        const baseUrl = `https://pixabay.com/api/`;
+        const perPage = `40`;
+        const fetchPage = `1`;
+        const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
+        
+        return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${fetchPage}`)
+            .then(response => {
+                // console.log(response);
+                if (!response.ok) {
+                    Notify.failure("Sorry, have a problem with server. Please try again.")
+                    throw new Error('fail')
+                } else {
+               return response.json()
+                }
+     
+             })
 
+    }
     
     function manageRenderMarkup(data) {
         if (!findImage) {
             Notiflix.Notify.failure("The field is empty")
         } else {
-            const render = renderMarkUp(data.hits)
+            render = renderMarkUp(data.hits)
             gallery.insertAdjacentHTML("beforeend", render)
-            lightbox.refresh()
+             lightbox.refresh()
+          
         }
     }
+  //  Infinity scroll
+    const guard = document.querySelector(".guard");
+    let options = {
+        root: null,
+        rootMargin: '30px',
+        threshold: 1,
+    }
 
+    let observer = new IntersectionObserver(onLoad, options);
+    let page = 1;
+    apiPixabay().then(data => {
+        gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
+        observer.observe(guard);
+    })
+
+    function onLoad(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                page+=1
+                apiPixabay(page).then(data => {
+                    gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
+                })  
+            }
+        });
+    
+
+    }
 
 }
 
 
-function renderMarkUp(arrPhotos) {
-     return arrPhotos.map(
-      ({
-        largeImageURL,
-        previewURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-         }) =>
-         {return `<div class="gallery__item">
-            <a class="gallery__link" href="${largeImageURL}">
-                <img class="gallery__image" src="${previewURL}" alt="${tags}" />
-            </a>
-                <div class="info">
-                    <p class="gallery__text">Likes ${likes}</p>
-                    <p class="gallery__text">Views ${views}</p>
-                    <p class="gallery__text">Comments ${comments}</p>
-                    <p class="gallery__text">Downloads ${downloads}</p
-                </div>
-    </div>`
-         }).join('');
 
-     
-     
-
- }
-
- 
-//  loadMore.addEventListener("сlick", onLoad)
-
-    
-
-// function onLoad(findImage) {
-//     apiPixabay(data).then(data => {
-//         if (data.total === 0) {
-//         Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
-//         } else {
-//     manageRenderMarkup(data)  
-//         }
-     
-// })  
-//  }
 
