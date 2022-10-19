@@ -75,7 +75,7 @@ function onSubmit(e) {
 
     let observer = new IntersectionObserver(onLoad, options);
  
-    apiPixabay(page).then(data => {
+    apiPixabay(page=1).then(data => {
         gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
          lightbox.refresh()
         observer.observe(guard);
