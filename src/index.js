@@ -59,6 +59,7 @@ function onSubmit(e) {
             Notiflix.Notify.failure("The field is empty")
         } else {
             render = renderMarkUp(data.hits)
+            gallery.innerHTML = "";
             gallery.insertAdjacentHTML("beforeend", render)
              lightbox.refresh()
           
