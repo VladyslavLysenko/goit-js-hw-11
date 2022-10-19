@@ -36,8 +36,7 @@ function onSubmit(e) {
         //    pixabay.com/api
         const key = `30662426-21982097d0559eebc608a0eec`;
         const baseUrl = `https://pixabay.com/api/`;
-        const perPage = `3`;
-        const fetchPage = `1`;
+        const perPage = 40;
         const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
         
         return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
@@ -75,7 +74,7 @@ function onSubmit(e) {
 
     let observer = new IntersectionObserver(onLoad, options);
  
-    apiPixabay(page=1).then(data => {
+    apiPixabay(page = 2).then(data => {
         gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
          lightbox.refresh()
         observer.observe(guard);
