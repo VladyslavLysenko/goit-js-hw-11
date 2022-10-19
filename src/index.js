@@ -6,38 +6,66 @@ const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
 
 
-form.addEventListener("submit",onSubmit)
 
+form.addEventListener("submit", onSubmit)
+
+let lightbox = new SimpleLightbox('.gallery a', {
+      captionSelector: "img",
+      captionsData: "alt",
+      captionDelay: 250,
+});
+    
 function onSubmit(e) {
     e.preventDefault();
     let findImage = e.currentTarget.elements.searchQuery.value.toLowerCase().trim();
-    apiPixabay()
-
-function apiPixabay(keyWord) {
-//    pixabay.com/api
-    const baseUrl = `https://pixabay.com/api/`;
-    const key = `30662426-21982097d0559eebc608a0eec`;
-    const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
-    const perPage = `9`
-    const page = `9`
+    apiPixabay(findImage)
     
-    return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`).then(response => {
+    function apiPixabay(findImage) {
+        //    pixabay.com/api
+        const key = `30662426-21982097d0559eebc608a0eec`;
+        const baseUrl = `https://pixabay.com/api/`;
+        const perPage = `40`
+        const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
+        const page = `1`
+        
+        return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
+            
+            .then(response => {
+
+        console.log(response);
+       
         if (!response.ok) {
+            Notify.failure("Sorry, have a problem with server. Please try again.")
             throw new Error('fail')
         }
         return response.json()
-    }).then(data => {
-        // console.log(data.hits)
-        const render = renderMarkUp(data.hits)
-        // console.log(render);
-        gallery.insertAdjacentHTML("beforeend",render )
+    })
+    .then(data => {
+        if (data.total === 0) {
+    Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
+}
+      manageRenderMarkup(data)  
     })
 }
+    
+    function manageRenderMarkup(data) {
+    if (!findImage) {
+        Notiflix.Notify.failure("The field is empty")
+    } else {
+        
+        const render = renderMarkUp(data.hits)
+        
+        gallery.insertAdjacentHTML("beforeend", render)
+    }
+        lightbox.refresh()
+    
+}
+
 
 }
 
 
- function renderMarkUp(arrPhotos) {
+function renderMarkUp(arrPhotos) {
      return arrPhotos.map(
       ({
         largeImageURL,
@@ -48,25 +76,23 @@ function apiPixabay(keyWord) {
         comments,
         downloads,
          }) =>
-         {
-             return `<div class="gallery__item">
-      <a class="gallery__link" href="${largeImageURL}">
-            <img class="gallery__image" src="${previewURL}" alt="${tags}" />
-         </a>
-         <p class="gallery__text">Likes ${likes}</p>
-         <p class="gallery__text">Views ${views}</p>
-         <p class="gallery__text">Comments ${comments}</p>
-          <p class="gallery__text">Downloads ${downloads}</p>
+         {return `<div class="gallery__item">
+            <a class="gallery__link" href="${largeImageURL}">
+                <img class="gallery__image" src="${previewURL}" alt="${tags}" />
+            </a>
+                <div class="info">
+                    <p class="gallery__text">Likes ${likes}</p>
+                    <p class="gallery__text">Views ${views}</p>
+                    <p class="gallery__text">Comments ${comments}</p>
+                    <p class="gallery__text">Downloads ${downloads}</p
+                </div>
     </div>`
          }).join('');
+
+     
      
 
  }
 
  
-let lightbox = new SimpleLightbox('.gallery a', {
-      captionSelector: "img",
-      captionsData: "alt",
-      captionDelay: 250,
-    });
 
