@@ -71,8 +71,8 @@ function onSubmit(e) {
     }
 
     let observer = new IntersectionObserver(onLoad, options);
-    let page = 1;
-    apiPixabay().then(data => {
+    let page = 0;
+    apiPixabay(page=1).then(data => {
         gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
         observer.observe(guard);
     })
