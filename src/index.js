@@ -14,6 +14,7 @@ let lightbox = new SimpleLightbox('.gallery a', {
       captionsData: "alt",
       captionDelay: 250,
 });
+   let page = 1;
     
 
 
@@ -34,11 +35,11 @@ function onSubmit(e) {
         //    pixabay.com/api
         const key = `30662426-21982097d0559eebc608a0eec`;
         const baseUrl = `https://pixabay.com/api/`;
-        const perPage = `40`;
+        const perPage = `3`;
         const fetchPage = `1`;
         const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
         
-        return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${fetchPage}`)
+        return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
             .then(response => {
                 // console.log(response);
                 if (!response.ok) {
@@ -71,8 +72,8 @@ function onSubmit(e) {
     }
 
     let observer = new IntersectionObserver(onLoad, options);
-    let page = 0;
-    apiPixabay(page=1).then(data => {
+ 
+    apiPixabay(page).then(data => {
         gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
         observer.observe(guard);
     })
@@ -80,7 +81,8 @@ function onSubmit(e) {
     function onLoad(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                page+=1
+                page += 1
+                console.log(page);
                 apiPixabay(page).then(data => {
                     gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
                 })  
