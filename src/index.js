@@ -28,6 +28,7 @@ function onSubmit(e) {
         if (data.total === 0) {
     Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
         }
+   Notiflix.Notify.info(`Holy sh*t! We found special for YOU! Total ${data.total} photos`)
       manageRenderMarkup(data)  
     })
     
