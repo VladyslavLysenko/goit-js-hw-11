@@ -77,6 +77,7 @@ function onSubmit(e) {
  
     apiPixabay(page).then(data => {
         gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
+         lightbox.refresh()
         observer.observe(guard);
     })
 
@@ -87,6 +88,7 @@ function onSubmit(e) {
                 console.log(page);
                 apiPixabay(page).then(data => {
                     gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
+                     lightbox.refresh()
                 })  
             }
         });
