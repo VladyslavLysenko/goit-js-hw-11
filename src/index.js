@@ -42,9 +42,8 @@ function onSubmit(e) {
     
     else {
         apiPixabay(findImage).then(repsonse => {
-            // console.log(repsonse.data);
-            // console.log(repsonse.data.total);
-            // console.log(repsonse.data.hits);
+            console.log(data);
+            
         if (repsonse.data.total === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
             return;
@@ -63,10 +62,10 @@ function onSubmit(e) {
 
 
 
-    async function apiPixabay(findImage) {
-        //    pixabay.com/api
-        const response = await axios.get(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
-        return response
+async function apiPixabay(findImage) {
+//    pixabay.com/api
+    const response = await axios.get(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
+    return response
     }
 
 function onLoad(entries) {
