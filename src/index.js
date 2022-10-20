@@ -2,11 +2,17 @@ import './css/styles.css';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import axios from 'axios';
 import { renderMarkUp } from "./render";
 
 const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
 const guard = document.querySelector(".guard");
+
+const key = `30662426-21982097d0559eebc608a0eec`;
+const baseUrl = `https://pixabay.com/api/`;
+const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
+
 const lightbox = new SimpleLightbox('.gallery a', {
       captionSelector: "img",
       captionsData: "alt",
@@ -35,13 +41,16 @@ function onSubmit(e) {
     }
     
     else {
-        apiPixabay(findImage).then(data => {
-        if (data.total === 0) {
+        apiPixabay(findImage).then(repsonse => {
+            // console.log(repsonse.data);
+            // console.log(repsonse.data.total);
+            // console.log(repsonse.data.hits);
+        if (repsonse.data.total === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
             return;
         }
-            Notiflix.Notify.info(`Holy sh*t! We found special for YOU! Total ${data.total} photos`);
-            const render = renderMarkUp(data.hits);
+            Notiflix.Notify.info(`We found special for YOU! Total ${repsonse.data.total} photos`);
+            const render = renderMarkUp(repsonse.data.hits);
             gallery.innerHTML = "";
             gallery.insertAdjacentHTML("beforeend", render)
             lightbox.refresh()
@@ -52,49 +61,34 @@ function onSubmit(e) {
     }
 }
 
-    function apiPixabay(findImage) {
-        //    pixabay.com/api
-        const key = `30662426-21982097d0559eebc608a0eec`;
-        const baseUrl = `https://pixabay.com/api/`;
-        const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
-        
-        return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
-            .then(response => {
-                // console.log(response);
-                if (!response.ok) {
-                    Notify.failure("Sorry, have a problem with server. Please try again.")
-                    throw new Error('fail')
-                } else {
-               return response.json()
-                }
-     
-             })
 
+
+    async function apiPixabay(findImage) {
+        //    pixabay.com/api
+        const response = await axios.get(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
+        return response
     }
 
 function onLoad(entries) {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      page += 1;
-      apiPixabay(findImage).then(data => {
-        console.log('page', page);
-        console.log('2', data.totalHits / perPage);
-        console.log('3', Math.ceil(data.totalHits / perPage));
-        if (
-          data.totalHits > 0 &&
-          page > Math.ceil(data.totalHits / perPage)
-        ) {
-            console.log('We are sorry, but you have reached the end of search results.');
-        //   Notify.warning(
-        //     'We are sorry, but you have reached the end of search results.',
-        //     optionsNotify
-        //   );
-          return;
-        }
-        const render = renderMarkUp(data.hits);
-        gallery.insertAdjacentHTML("beforeend", render)
-        lightbox.refresh();
-      });
-    }
-  });
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            page += 1;
+            apiPixabay(findImage).then(response => {
+                console.log('page', page);
+                const allPagesFetch = Math.ceil(response.data.totalHits / perPage);
+                console.log(allPagesFetch);
+                if (page < allPagesFetch) {
+                const render = renderMarkUp(response.data.hits);
+                gallery.insertAdjacentHTML("beforeend", render)
+                lightbox.refresh();
+                return;
+                } Notiflix.Notify.failure('We are sorry, but you have reached the end of search results.')
+                return;
+                
+             
+            })
+        } 
+    })
 }
+     
+            
