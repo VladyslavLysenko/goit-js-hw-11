@@ -5,38 +5,57 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import { renderMarkUp } from "./render";
 
 const form = document.querySelector(".search-form");
-// const loadMore = document.querySelector(".load-more")
 const gallery = document.querySelector(".gallery");
-let findImage = "";
-let render = "";
-let lightbox = new SimpleLightbox('.gallery a', {
+const guard = document.querySelector(".guard");
+const lightbox = new SimpleLightbox('.gallery a', {
       captionSelector: "img",
       captionsData: "alt",
       captionDelay: 250,
 });
-   let page = 1;
+const optionsObserve = {
+    root: null,
+    rootMargin: '30px',
+    threshold: 1,
+}   
+let observer = new IntersectionObserver(onLoad, optionsObserve);
+let findImage = "";
+let page = 1;
+let perPage = 40;
     
 
 
 form.addEventListener("submit", onSubmit)
 
-
 function onSubmit(e) {
     e.preventDefault();
     findImage = e.currentTarget.elements.searchQuery.value.toLowerCase().trim();
-    apiPixabay(findImage).then(data => {
+    if (!findImage) {
+    Notiflix.Notify.failure("The field is empty")
+    return;
+    }
+    
+    else {
+        apiPixabay(findImage).then(data => {
         if (data.total === 0) {
-    Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
+            Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
+            return;
         }
-   Notiflix.Notify.info(`Holy sh*t! We found special for YOU! Total ${data.total} photos`)
-      manageRenderMarkup(data)  
+            Notiflix.Notify.info(`Holy sh*t! We found special for YOU! Total ${data.total} photos`);
+            const render = renderMarkUp(data.hits);
+            gallery.innerHTML = "";
+            gallery.insertAdjacentHTML("beforeend", render)
+            lightbox.refresh()
+            observer.observe(guard);
     })
     
-    function apiPixabay(data) {
+
+    }
+}
+
+    function apiPixabay(findImage) {
         //    pixabay.com/api
         const key = `30662426-21982097d0559eebc608a0eec`;
         const baseUrl = `https://pixabay.com/api/`;
-        const perPage = 40;
         const baseUrlOptions = `image_type=photo&orientation=horizontal&safesearch=true`;
         
         return fetch(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
@@ -52,51 +71,30 @@ function onSubmit(e) {
              })
 
     }
-    
-    function manageRenderMarkup(data) {
-        if (!findImage) {
-            Notiflix.Notify.failure("The field is empty")
-        } else {
-            render = renderMarkUp(data.hits)
-            gallery.innerHTML = "";
-            gallery.insertAdjacentHTML("beforeend", render)
-             lightbox.refresh()
-          
+
+function onLoad(entries) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      page += 1;
+      apiPixabay(findImage).then(data => {
+        console.log('page', page);
+        console.log('2', data.totalHits / perPage);
+        console.log('3', Math.ceil(data.totalHits / perPage));
+        if (
+          data.totalHits > 0 &&
+          page > Math.ceil(data.totalHits / perPage)
+        ) {
+            console.log('We are sorry, but you have reached the end of search results.');
+        //   Notify.warning(
+        //     'We are sorry, but you have reached the end of search results.',
+        //     optionsNotify
+        //   );
+          return;
         }
+        const render = renderMarkUp(data.hits);
+        gallery.insertAdjacentHTML("beforeend", render)
+        lightbox.refresh();
+      });
     }
-  //  Infinity scroll
-    const guard = document.querySelector(".guard");
-    let options = {
-        root: null,
-        rootMargin: '30px',
-        threshold: 1,
-    }
-
-    let observer = new IntersectionObserver(onLoad, options);
- 
-    apiPixabay(page = 2).then(data => {
-        gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
-         lightbox.refresh()
-        observer.observe(guard);
-    })
-
-    function onLoad(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                page += 1
-                console.log(page);
-                apiPixabay(page).then(data => {
-                    gallery.insertAdjacentHTML("beforeend", renderMarkUp(data.hits));
-                     lightbox.refresh()
-                })  
-            }
-        });
-    
-
-    }
-
+  });
 }
-
-
-
-
