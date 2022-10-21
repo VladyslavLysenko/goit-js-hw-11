@@ -1,9 +1,9 @@
 export function renderMarkUp(arrPhotos) {
-    
+    console.log(arrPhotos);
      return arrPhotos.map(
       ({
         largeImageURL,
-        previewURL,
+        webformatURL,
         tags,
         likes,
         views,
@@ -12,13 +12,13 @@ export function renderMarkUp(arrPhotos) {
          }) =>
          {return `<div class="gallery__item">
             <a class="gallery__link" href="${largeImageURL}">
-                <img class="gallery__image" src="${previewURL}" alt="${tags}" />
+                <img class="gallery__image" src="${webformatURL}" alt="${tags}" />
             </a>
                 <div class="gallery__item__info">
-                    <p class="gallery__text">Likes<span class="text">${likes}</span></p>
-                    <p class="gallery__text">Views<span class="text">${views}</span></p>
-                    <p class="gallery__text">Comments<span class="text">${comments}</span></p>
-                    <p class="gallery__text">Downloads<span class="text">${downloads}</span></p>
+                    <div class="info-wrap"><p class="gallery__text"><b>Likes</b></p><span class="text">${likes}</span></div>
+                    <div class="info-wrap"><p class="gallery__text"><b>Views</b></p><span class="text">${views}</span></div>
+                    <div class="info-wrap"><p class="gallery__text"><b>Comments</b></p><span class="text">${comments}</span></div>
+                    <div class="info-wrap"><p class="gallery__text"><b>Downloads</b></p><span class="text">${downloads}</span></div>
                 </div>
     </div>`
          }).join('');

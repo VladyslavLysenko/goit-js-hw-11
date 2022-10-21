@@ -42,8 +42,6 @@ function onSubmit(e) {
     
     else {
         apiPixabay(findImage).then(repsonse => {
-            console.log(data);
-            
         if (repsonse.data.total === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
             return;
@@ -79,7 +77,15 @@ function onLoad(entries) {
                 if (page < allPagesFetch) {
                 const render = renderMarkUp(response.data.hits);
                 gallery.insertAdjacentHTML("beforeend", render)
-                lightbox.refresh();
+                    lightbox.refresh();
+                    // плавний скрол
+                    const { height: cardHeight } = document
+                     .querySelector(".gallery")
+                     .firstElementChild.getBoundingClientRect();
+                    window.scrollBy({
+                    top: cardHeight * 2,
+                    behavior: "smooth",});
+                    
                 return;
                 } Notiflix.Notify.failure('We are sorry, but you have reached the end of search results.')
                 return;
