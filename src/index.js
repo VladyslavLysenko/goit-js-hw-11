@@ -35,8 +35,12 @@ form.addEventListener("submit", onSubmit)
 function onSubmit(e) {
     e.preventDefault();
     findImage = e.currentTarget.elements.searchQuery.value.toLowerCase().trim();
+    gallery.innerHTML = "";
+  
+  
     if (!findImage) {
-    Notiflix.Notify.failure("The field is empty")
+        Notiflix.Notify.failure("The field is empty")
+  
     return;
     }
     
@@ -83,7 +87,7 @@ function onLoad(entries) {
                      .querySelector(".gallery")
                      .firstElementChild.getBoundingClientRect();
                     window.scrollBy({
-                    top: cardHeight * 2,
+                    top: cardHeight*2,
                     behavior: "smooth",});
                     
                 return;
