@@ -35,8 +35,16 @@ form.addEventListener("submit", onSubmit)
 
 function onSubmit(e) {
     e.preventDefault();
+    
+    window.scrollBy({
+    behavior: 'auto',
+  });
+    window.scrollTo(top);
+    
     findImage = e.currentTarget.elements.searchQuery.value.toLowerCase().trim();
-    gallery.innerHTML = "";
+    console.log(findImage);
+    // gallery.innerHTML = "";
+
   
   
     if (!findImage) {
@@ -68,6 +76,7 @@ function onSubmit(e) {
 
 
 function onLoad(entries) {
+    
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             page += 1;
@@ -80,9 +89,8 @@ function onLoad(entries) {
                 gallery.insertAdjacentHTML("beforeend", render)
                     lightbox.refresh();
                     // плавний скрол
-                    const { height: cardHeight } = document
-                     .querySelector(".gallery")
-                     .firstElementChild.getBoundingClientRect();
+                    const { height: cardHeight } =
+                    gallery.firstElementChild.getBoundingClientRect();
                     window.scrollBy({
                     top: cardHeight*2,
                     behavior: "smooth",});
