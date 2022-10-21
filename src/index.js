@@ -26,7 +26,7 @@ const optionsObserve = {
 }   
 let observer = new IntersectionObserver(onLoad, optionsObserve);
 let findImage = "";
-let page = 1;
+let page = 0;
 let perPage = 40;
     
 
@@ -54,12 +54,14 @@ function onSubmit(e) {
     }
     
     else {
+        page=1
         apiPixabay(findImage,key,baseUrl,baseUrlOptions,perPage,page).then(repsonse => {
         if (repsonse.data.total === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
             return;
         }
             Notiflix.Notify.info(`We found special for YOU! Total ${repsonse.data.total} photos`);
+            page;
             const render = renderMarkUp(repsonse.data.hits);
             gallery.innerHTML = "";
             gallery.insertAdjacentHTML("beforeend", render)
@@ -76,7 +78,7 @@ function onSubmit(e) {
 
 
 function onLoad(entries) {
-    
+
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             page += 1;
@@ -84,7 +86,8 @@ function onLoad(entries) {
                 console.log('page', page);
                 const allPagesFetch = Math.ceil(response.data.totalHits / perPage);
                 console.log(allPagesFetch);
-                if (page < allPagesFetch) {
+                
+                if (page <= allPagesFetch) {
                 const render = renderMarkUp(response.data.hits);
                 gallery.insertAdjacentHTML("beforeend", render)
                     lightbox.refresh();
