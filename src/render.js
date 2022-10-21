@@ -22,33 +22,5 @@ export function renderMarkUp(arrPhotos) {
                 </div>
     </div>`
          }).join('');
-
-     
-     
-
  }
 
-
-//  export function renderMarkUp(arrPhotos) {
-    
-//      return arrPhotos.map(
-//       ({
-//         largeImageURL,
-//         previewURL,
-//         tags,
-//         likes,
-//         views,
-//         comments,
-//         downloads,
-//          }) =>
-//          {
-//              return `<div class="gallery__item">
-//              <p class="gallery__text">Likes ${likes}</p>
-//              <p class="gallery__text">Views ${views}</p>
-//                  </div>`
-//          }).join('');
-
-     
-     
-
-//  }

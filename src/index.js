@@ -2,8 +2,9 @@ import './css/styles.css';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import axios from 'axios';
+
 import { renderMarkUp } from "./render";
+import {apiPixabay} from "./fetch"
 
 const form = document.querySelector(".search-form");
 const gallery = document.querySelector(".gallery");
@@ -45,7 +46,7 @@ function onSubmit(e) {
     }
     
     else {
-        apiPixabay(findImage).then(repsonse => {
+        apiPixabay(findImage,key,baseUrl,baseUrlOptions,perPage,page).then(repsonse => {
         if (repsonse.data.total === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.")
             return;
@@ -64,17 +65,13 @@ function onSubmit(e) {
 
 
 
-async function apiPixabay(findImage) {
-//    pixabay.com/api
-    const response = await axios.get(`${baseUrl}?key=${key}&q=${findImage}&${baseUrlOptions}&per_page=${perPage}&page=${page}`)
-    return response
-    }
+
 
 function onLoad(entries) {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             page += 1;
-            apiPixabay(findImage).then(response => {
+            apiPixabay(findImage,key,baseUrl,baseUrlOptions,perPage,page).then(response => {
                 console.log('page', page);
                 const allPagesFetch = Math.ceil(response.data.totalHits / perPage);
                 console.log(allPagesFetch);
