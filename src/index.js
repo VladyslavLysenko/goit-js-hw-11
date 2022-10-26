@@ -79,6 +79,9 @@ function onSubmit(e) {
 
 function onLoad(entries) {
 
+      if (findImage === '') {
+    return;
+  }
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             page += 1;
